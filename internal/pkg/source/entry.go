@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -65,6 +66,16 @@ func (entries LogEntries) Rows() []table.Row {
 	}
 
 	return rows
+}
+
+// Sort sorts entries by field
+func (entries LogEntries) Sort(field string) LogEntries {
+	sorted := LogEntrySlice{
+		Entries:     entries,
+		SortByField: field,
+	}
+	sort.Sort(sorted)
+	return sorted.Entries
 }
 
 func parseField(parsedLine any, field config.Field) string {

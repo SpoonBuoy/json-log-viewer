@@ -29,6 +29,10 @@ func (a Application) isFilterKeyMap(msg tea.KeyMsg) bool {
 	return msg.String() == "f"
 }
 
+func (a Application) isSortKeyMap(msg tea.KeyMsg) bool {
+	return msg.String() == "o"
+}
+
 func (a Application) isBackKeyMap(msg tea.KeyMsg) bool {
 	switch msg.String() {
 	case "esc", "q":

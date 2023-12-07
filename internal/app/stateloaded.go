@@ -73,6 +73,8 @@ func (s StateLoaded) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return s.handleRequestOpenJSON()
 	case events.FilterKeyClickedMsg:
 		return s.handleFilterKeyClickedMsg()
+	case events.SortKeyClickedMsg:
+		return s.handleSortKeyClickedMsg()
 	case tea.KeyMsg:
 		cmdBatch = append(cmdBatch, s.handleKeyMsg(msg)...)
 
@@ -121,6 +123,10 @@ func (s StateLoaded) handleViewRowsReloadRequestedMsg() (tea.Model, tea.Cmd) {
 
 func (s StateLoaded) handleFilterKeyClickedMsg() (tea.Model, tea.Cmd) {
 	return initializeModel(newStateFiltering(s.helper.Application, s))
+}
+
+func (s StateLoaded) handleSortKeyClickedMsg() (tea.Model, tea.Cmd) {
+	return initializeModel(newStateSorting(s.helper.Application, s))
 }
 
 func (s StateLoaded) withApplication(application Application) (state, tea.Cmd) {

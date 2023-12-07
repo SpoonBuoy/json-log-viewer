@@ -37,6 +37,9 @@ type (
 
 	// FilterKeyClickedMsg is a keyboard event after pressing any "Back" key.
 	BackKeyClickedMsg struct{}
+
+	// SortKeyClickedMsg is a keyboard event for "Sorting"  key.
+	SortKeyClickedMsg struct{}
 )
 
 // OpenJSONRowRequested implements tea.Cmd. It creates OpenJSONRowRequestedMsg.
@@ -72,4 +75,9 @@ func FilterKeyClicked() tea.Msg {
 // BackKeyClicked implements tea.Cmd. It creates BackKeyClickedMsg.
 func BackKeyClicked() tea.Msg {
 	return BackKeyClickedMsg{}
+}
+
+// SortKeyClicked implements tea.Cmd. It creates  SortKeyClickedMsg.
+func SortKeyClicked() tea.Msg {
+	return SortKeyClickedMsg{}
 }

@@ -116,6 +116,8 @@ func (h helper) handleKeyMsg(msg tea.KeyMsg) tea.Cmd {
 		return events.BackKeyClicked
 	case h.isFilterKeyMap(msg):
 		return events.FilterKeyClicked
+	case h.isSortKeyMap(msg):
+		return events.SortKeyClicked
 	case h.isEnterKeyMap(msg):
 		return events.EnterKeyClicked
 	case h.isArrowRightKeyMap(msg):
@@ -123,6 +125,13 @@ func (h helper) handleKeyMsg(msg tea.KeyMsg) tea.Cmd {
 	default:
 		return nil
 	}
+}
+
+func max(x int, y int) int {
+	if x > y {
+		return x
+	}
+	return y
 }
 
 func getColumns(width int, cfg *config.Config) []table.Column {
