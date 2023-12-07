@@ -14,37 +14,50 @@ type StateSorted struct {
 	previousState StateLoaded
 	table         logsTableModel
 	logEntries    source.LogEntries
-
-	filterText string
+	sortByField   string
+	revSort       bool
 }
 
 func newStateSorted(
 	application Application,
 	previousState StateLoaded,
-	filterText string,
+	sortByField string,
+	revSort bool,
 ) StateSorted {
 	return StateSorted{
 		helper: helper{Application: application},
 
 		previousState: previousState,
 		table:         previousState.table,
-
-		filterText: filterText,
+		sortByField:   sortByField,
+		revSort:       revSort,
 	}
 }
 
 // Init initializes component. It implements tea.Model.
 func (s StateSorted) Init() tea.Cmd {
 	return func() tea.Msg {
-		return events.LogEntriesLoadedMsg(
-			s.previousState.logEntries.Sort(s.filterText),
-		)
+		if s.revSort {
+			return events.LogEntriesLoadedMsg(
+				s.previousState.logEntries.RevSort(s.sortByField, s.helper.Config),
+			)
+		} else {
+			return events.LogEntriesLoadedMsg(
+				s.previousState.logEntries.Sort(s.sortByField, s.helper.Config),
+			)
+		}
 	}
 }
 
 // View renders component. It implements tea.Model.
 func (s StateSorted) View() string {
-	footer := s.Application.FooterStyle.Render(" sorted by: " + s.filterText)
+	var sortOrder string
+	if s.revSort {
+		sortOrder = "Descending"
+	} else {
+		sortOrder = "Ascending"
+	}
+	footer := s.Application.FooterStyle.Render(" Sorted by: " + s.sortByField + " " + sortOrder)
 
 	return s.BaseStyle.Render(s.table.View()) + "\n" + footer
 }

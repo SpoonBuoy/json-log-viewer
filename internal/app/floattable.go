@@ -19,23 +19,23 @@ func newFloatTableModel(application Application, logEntries source.LogEntries) f
 	helper := helper{Application: application}
 
 	const cellIDLogLevel = 1
-	// var wsz tea.WindowSizeMsg = tea.WindowSizeMsg{
-	// 	Width:  application.LastWindowSize.Width - 100,
-	// 	Height: application.LastWindowSize.Height - 100,
-	// }
-	wsz := application.LastWindowSize
+
 	tableLogs := table.New(
-		table.WithColumns([]table.Column{{Width: wsz.Width, Title: "Sort By Field"}}),
+		table.WithColumns([]table.Column{{Width: application.LastWindowSize.Width, Title: "Sort By Field"}}),
 		table.WithFocused(true),
-		table.WithHeight(wsz.Height-100),
-		table.WithWidth(wsz.Width-100),
+		table.WithHeight(application.LastWindowSize.Height-100),
+		table.WithWidth(application.LastWindowSize.Width-100),
 	)
 
-	//tableLogs.SetRows([]table.Row{logEntries[0].Row()})
-	x := []table.Row{{"abc"}, {"def"}, {"arsalan"}}
+	//read sort field options from config.Fields
+	cfg := application.Config
+	var rows []table.Row
+	for _, field := range cfg.Fields {
+		rows = append(rows, table.Row{field.Title})
+	}
 
 	tableLogs.SetStyles(getTableStyles())
-	tableLogs.SetRows(x)
+	tableLogs.SetRows(rows)
 
 	tableStyles := getTableStyles()
 	tableStyles.RenderCell = func(_ table.Model, value string, position table.CellPosition) string {
@@ -60,7 +60,7 @@ func newFloatTableModel(application Application, logEntries source.LogEntries) f
 		helper:     helper,
 		table:      tableLogs,
 		logEntries: logEntries,
-	}.handleWindowSizeMsg(wsz)
+	}.handleWindowSizeMsg(application.LastWindowSize)
 }
 
 // Init initializes component. It implements tea.Model.

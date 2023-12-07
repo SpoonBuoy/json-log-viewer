@@ -33,6 +33,10 @@ func (a Application) isSortKeyMap(msg tea.KeyMsg) bool {
 	return msg.String() == "o"
 }
 
+func (a Application) isRevSortKeyMap(msg tea.KeyMsg) bool {
+	return msg.String() == "a"
+}
+
 func (a Application) isBackKeyMap(msg tea.KeyMsg) bool {
 	switch msg.String() {
 	case "esc", "q":

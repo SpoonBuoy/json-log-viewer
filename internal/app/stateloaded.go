@@ -7,7 +7,7 @@ import (
 	"github.com/hedhyw/json-log-viewer/internal/pkg/source"
 )
 
-const defaultFooter = "[Ctrl+C] Exit; [Esc] Back; [Enter] Open/Hide; [↑↓] Navigation; [F] Filter"
+const defaultFooter = "[Ctrl+C] Exit; [Esc] Back; [Enter] Open/Hide; [↑↓] Navigation; [F] Filter; [O] Sort"
 
 // StateLoaded is a state that shows all loaded records.
 type StateLoaded struct {

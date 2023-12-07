@@ -11,17 +11,15 @@ type StateSorting struct {
 	helper
 	initCmd       tea.Cmd
 	previousState StateLoaded
-	//table         logsTableModel
-	sortTable floatTableModel
-	//textInput textinput.Model
+	sortTable     floatTableModel
+	sortByField   string
 }
 
 func newStateSorting(
 	application Application,
 	previousState StateLoaded,
 ) StateSorting {
-	//textInput := textinput.New()
-	//textInput.Focus()
+
 	st := newFloatTableModel(application, previousState.logEntries)
 	return StateSorting{
 		helper:        helper{Application: application},
@@ -29,7 +27,6 @@ func newStateSorting(
 		previousState: previousState,
 		//table:         previousState.table,
 		sortTable: st,
-		//textInput: textInput,
 	}
 }
 
@@ -40,9 +37,8 @@ func (s StateSorting) Init() tea.Cmd {
 
 // View renders component. It implements tea.Model.
 func (s StateSorting) View() string {
-	//t := newFloatTableModel(s.Application, s.sortTable.logEntries)
-	//return s.BaseStyle.Render(s.sortTable.View()) + s.sortTable.View() + "\n" + s.textInput.View()
-	return s.BaseStyle.Render(s.sortTable.View())
+	footer := s.Application.FooterStyle.Render("[A] Ascending; [Enter] Descending")
+	return s.BaseStyle.Render(s.sortTable.View()) + "\n" + s.FooterStyle.Render(footer)
 }
 
 // Update handles events. It implements tea.Model.
@@ -58,39 +54,60 @@ func (s StateSorting) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return s.previousState.withApplication(s.Application)
 	case events.EnterKeyClickedMsg:
 		return s.handleEnterKeyClickedMsg()
-	// case tea.KeyMsg:
-	// 	if cmd := s.handleKeyMsg(msg); cmd != nil {
-	// 		// Intercept table update.
-	// 		return s, cmd
-	// 	}
+	case events.RevSortKeyClickedMsg:
+		return s.handleRevSortKeyClickedMsg()
+	case tea.KeyMsg:
+		cmdBatch = append(cmdBatch, s.handleKeyMsg(msg)...)
 
-	default:
-		s.sortTable, cmdBatch = batched(s.sortTable.Update(msg))(cmdBatch)
+		if s.isFilterKeyMap(msg) {
+			// Intercept table update.
+			return s, tea.Batch(cmdBatch...)
+		}
 	}
 
-	//s.textInput, cmdBatch = batched(s.textInput.Update(msg))(cmdBatch)
+	s.sortTable, cmdBatch = batched(s.sortTable.Update(msg))(cmdBatch)
 
 	return s, tea.Batch(cmdBatch...)
 }
 
-// func (s StateSorting) handleKeyMsg(msg tea.KeyMsg) tea.Cmd {
-// 	if len(msg.Runes) == 1 {
-// 		return nil
-// 	}
+func (s StateSorting) handleKeyMsg(msg tea.KeyMsg) []tea.Cmd {
+	var cmdBatch []tea.Cmd
 
-// 	return s.helper.handleKeyMsg(msg)
-// }
+	cmdBatch = appendCmd(cmdBatch, s.helper.handleKeyMsg(msg))
 
+	if s.isArrowUpKeyMap(msg) {
+		cmdBatch = appendCmd(cmdBatch, s.handleArrowUpKeyClicked())
+	}
+
+	return cmdBatch
+}
+
+func (s StateSorting) handleArrowUpKeyClicked() tea.Cmd {
+	if s.sortTable.Cursor() == 0 {
+		return events.ViewRowsReloadRequested
+	}
+
+	return nil
+}
 func (s StateSorting) handleEnterKeyClickedMsg() (tea.Model, tea.Cmd) {
-	// if s.textInput.Value() == "" {
-	// 	return s, events.BackKeyClicked
-	// }
 
+	s.sortByField = getFieldFromConfigByIndex(s.sortTable.Cursor(), s.Config)
 	return initializeModel(newStateSorted(
 		s.Application,
 		s.previousState,
-		"xxx",
-		//s.textInput.Value(),
+		s.sortByField,
+		true,
+	))
+}
+
+func (s StateSorting) handleRevSortKeyClickedMsg() (tea.Model, tea.Cmd) {
+
+	s.sortByField = getFieldFromConfigByIndex(s.sortTable.Cursor(), s.Config)
+	return initializeModel(newStateSorted(
+		s.Application,
+		s.previousState,
+		s.sortByField,
+		false,
 	))
 }
 

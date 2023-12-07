@@ -118,6 +118,8 @@ func (h helper) handleKeyMsg(msg tea.KeyMsg) tea.Cmd {
 		return events.FilterKeyClicked
 	case h.isSortKeyMap(msg):
 		return events.SortKeyClicked
+	case h.isRevSortKeyMap(msg):
+		return events.RevSortKeyClicked
 	case h.isEnterKeyMap(msg):
 		return events.EnterKeyClicked
 	case h.isArrowRightKeyMap(msg):
@@ -219,4 +221,13 @@ func initializeModel[T tea.Model](m T) (T, tea.Cmd) {
 
 func modelValue(model tea.Model) string {
 	return fmt.Sprintf("%T\n%s", model, model.View())
+}
+
+func getFieldFromConfigByIndex(index int, cfg *config.Config) string {
+	for i, field := range cfg.Fields {
+		if i == index {
+			return field.Title
+		}
+	}
+	return "-"
 }

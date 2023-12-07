@@ -68,14 +68,26 @@ func (entries LogEntries) Rows() []table.Row {
 	return rows
 }
 
-// Sort sorts entries by field
-func (entries LogEntries) Sort(field string) LogEntries {
+// Sort sorts entries by field in ascending order
+func (entries LogEntries) Sort(field string, cfg *config.Config) LogEntries {
 	sorted := LogEntrySlice{
 		Entries:     entries,
 		SortByField: field,
+		cfg:         cfg,
 	}
 	sort.Sort(sorted)
 	return sorted.Entries
+}
+
+// RevSort sorts entries by field in descending order
+func (entries LogEntries) RevSort(field string, cfg *config.Config) LogEntries {
+	sorted := LogEntrySlice{
+		Entries:     entries,
+		SortByField: field,
+		cfg:         cfg,
+	}
+	sort.Sort(sorted)
+	return sorted.Entries.Reverse()
 }
 
 func parseField(parsedLine any, field config.Field) string {
