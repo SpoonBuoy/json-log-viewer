@@ -1,7 +1,6 @@
 package source
 
 import (
-	"fmt"
 	"unicode"
 
 	"github.com/hedhyw/json-log-viewer/internal/pkg/config"
@@ -38,12 +37,3 @@ func (s LogEntrySlice) Less(i, j int) bool {
 	return s.Entries[i].Fields[0] < s.Entries[j].Fields[0]
 }
 func (s LogEntrySlice) Swap(i, j int) { s.Entries[i], s.Entries[j] = s.Entries[j], s.Entries[i] }
-
-func getFieldFromConfigByIndex(index int, cfg *config.Config) (config.Field, error) {
-	for i, field := range cfg.Fields {
-		if i == index {
-			return field, nil
-		}
-	}
-	return config.Field{}, fmt.Errorf("no field found with index %d", index)
-}
